@@ -1,22 +1,37 @@
-drivers = [
-    {
-    "fullname": "max verstappen",
-     "country": "netherlands",
-     "team": "rebull"
+drivers = {
+    '1': {
+    "name": "max verstappen",
+    "country": "netherlands",
     },
-    {
-    "fullname": "lewis hamilton",
-     "country": "england",
-     "team": "mercedes"
+    '2': {
+    "name": "lewis hamilton",
+    "country": "england",
     },
-    {
-    "fullname": "fernando alonso",
-     "country": "spain",
-     "team": "aston martin"
+    '3': {
+    "name": "fernando alonso",
+    "country": "spain",
     },
-    {
-    "fullname": "charles leclerc",
-     "country": "monaco",
-     "team": "ferrari"
+    '4': {
+    "name": "charles leclerc",
+    "country": "monaco",
     }
-]
+}
+
+teams = {
+    '1': {
+    "teamname": "red bull",
+    "driver_id": 1
+    },
+    '2': {
+    "teamname": "mercedes",
+    "driver_id": 2
+    },
+    '3': {
+    "teamname": "aston martin",
+    "driver_id": 3 
+    },
+    '4': {
+    "teamname": "ferrari",
+    "driver_id": 4
+    }
+}
