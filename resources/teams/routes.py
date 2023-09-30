@@ -1,43 +1,50 @@
-from flask import request
+from flask.views import MethodView
 from uuid import uuid4
+from flask_smorest import abort
 
-from app  import app
+
+from schemas import TeamSchema
+from . import bp
 from db import teams
 
-@app.get('/team')
-def get_teams():
-    return {"teams": teams}
+@bp.route('/')
+class Teams(MethodView):
+#SHOW TEAMS    
+    def get(self):
+        return {"teams": teams}
 
 
-@app.get('/team/<team_id>')
-def get_team(team_id):
-    try:
-        team = teams[team_id]
-        return team, 200
-    except KeyError:
-        return {"message": "team not found"}, 400
+#EDIT TEAMS
+    @bp.arguments(TeamSchema)
+    def post(self, team_data):
+        teams[uuid4().hex] = team_data
+        return team_data, 201
 
+@bp.route('/<team_id>')
+class Team(MethodView):
+#SHOW TEAM
+    def get(self, team_id):
+        try:
+            team = teams[team_id]
+            return team, 200
+        except KeyError:
+            abort(404, message="Team not found")
 
-@app.post('/team')
-def post_team():
-    team_data = request.get_json()
-    teams[uuid4().hex] = team_data
-    return team_data, 201
+#EDIT TEAM
+    @bp.arguments(TeamSchema)
+    def put(self, team_data, team_id):
+        if team_id in teams:
+            team = teams[team_id]
+            if team_data["user_id"] != team["user_id"]:
+                abort(400, message="Cannot edit another Driver's Team")
+            team["teamname"] = team_data["teamname"]
+            return team, 200
+        abort(404, message="Team not found")
 
-@app.put('/team/<team_id>')
-def put_team(team_id):
-    team_data = request.get_json()
-    if team_id in teams:
-        team = teams[team_id]
-        team["teamname"] = team_data["teamname"]
-        return team, 200
-    return {"message": "Team not found"}, 400
-
-
-@app.delete('/team/<team_id>')
-def delete_team(team_id):
-    try:
-        deleted_team = teams.pop(team_id)
-        return {"message":f'{deleted_team} was deleted'}, 202
-    except KeyError:
-        return {"message": "Team not found"}, 400
+#DELETE TEAM
+    def delete(self, team_id):
+        try:
+            deleted_team = teams.pop(team_id)
+            return {"message":f'{deleted_team} was deleted'}, 202
+        except KeyError:
+            abort(404, message="Team not found")
