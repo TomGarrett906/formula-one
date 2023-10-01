@@ -1,50 +1,80 @@
 from flask.views import MethodView
 from uuid import uuid4
 from flask_smorest import abort
+from sqlalchemy.exc import IntegrityError
+from flask_jwt_extended import get_jwt_identity, jwt_required
 
-
+from resources.drivers.DriverModel import DriverModel
+from .TeamModel import TeamModel
 from schemas import TeamSchema
 from . import bp
-from db import teams
+
+
+
+
 
 @bp.route('/')
 class Teams(MethodView):
-#SHOW TEAMS    
+
+#SHOW TEAMS
+    @jwt_required()
+    @bp.response(200, TeamSchema(many=True))    
     def get(self):
-        return {"teams": teams}
+        return TeamModel.query.all()
 
-
-#EDIT TEAMS
+# # #EDIT TEAMS
+    @jwt_required()
     @bp.arguments(TeamSchema)
+    @bp.response(200, TeamSchema)
     def post(self, team_data):
-        teams[uuid4().hex] = team_data
-        return team_data, 201
+        jwt = get_jwt_identity()
+        team_id = jwt['sub']
+        team = TeamModel(**team_data, team_id = team_id)        
+        try:        
+            team.save()
+            return team
+        except IntegrityError:
+            abort(400, message="Invalid Team ID")
+
+
+
+
+
 
 @bp.route('/<team_id>')
 class Team(MethodView):
-#SHOW TEAM
+
+# # SHOW TEAM
+    @jwt_required()
+    @bp.response(200, TeamSchema)
     def get(self, team_id):
-        try:
-            team = teams[team_id]
-            return team, 200
-        except KeyError:
-            abort(404, message="Team not found")
+        team = TeamModel.query.get(team_id)
+        if team:
+            return team
+        abort(400, message="Invalid Team ID")
 
-#EDIT TEAM
+# # #EDIT TEAM
+    @jwt_required()
     @bp.arguments(TeamSchema)
+    @bp.response(200, TeamSchema) 
     def put(self, team_data, team_id):
-        if team_id in teams:
-            team = teams[team_id]
-            if team_data["user_id"] != team["user_id"]:
-                abort(400, message="Cannot edit another Driver's Team")
-            team["teamname"] = team_data["teamname"]
-            return team, 200
-        abort(404, message="Team not found")
+        team = TeamModel.query.get(team_id)
+        if team and team_data["teamname"]:
+            if team.team_id == team_id():
+                team.teamname = team_data["teamname"]
+                team.save()
+                return team
+            else:
+                abort(401, message='Unauthorized')
+        abort(400, message="Invalid Team Data")
 
-#DELETE TEAM
+# # #DELETE TEAM
     def delete(self, team_id):
-        try:
-            deleted_team = teams.pop(team_id)
-            return {"message":f'{deleted_team} was deleted'}, 202
-        except KeyError:
-            abort(404, message="Team not found")
+        team_id = get_jwt_identity()
+        team = TeamModel.query.get(team_id)
+        if team:
+            if team.team_id == team_id:
+                team.delete()
+                return {'message': 'Team Deleted'}, 202            
+            abort(401, message='Owner doesn\'t have rights')
+        abort(400, message='Invalid Team ID')

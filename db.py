@@ -1,5 +1,6 @@
 drivers = {
     '1': {
+    "driver_id" : 1,
     "username": "max verstappen",
     "email": "ver@f1.com",
     "password": "123",
@@ -7,6 +8,7 @@ drivers = {
     "password": "123"
     },
     '2': {
+    "driver_id" : 2,
     "username": "lewis hamilton",
     "email": "ham@f1.com",
     "password": "123",
@@ -14,6 +16,7 @@ drivers = {
     "password": "123"
     },
     '3': {
+    "driver_id" : 3,
     "username": "fernando alonso",
     "email": "alo@f1.com",
     "password": "123",
@@ -21,6 +24,7 @@ drivers = {
     "password": "123"
     },
     '4': {
+    "driver_id" : 4,
     "username": "charles leclerc",
     "email": "lec@f1.com",
     "password": "123",
@@ -32,18 +36,18 @@ drivers = {
 teams = {
     '1': {
     "teamname": "red bull",
-    "user_id": '1'
+    "team_id": '1'
     },
     '2': {
     "teamname": "mercedes",
-    "user_id": '2'
+    "team_id": '2'
     },
     '3': {
     "teamname": "aston martin",
-    "user_id": '3' 
+    "team_id": '3' 
     },
     '4': {
     "teamname": "ferrari",
-    "user_id": '4'
+    "team_id": '4'
     }
 }

@@ -1,3 +1,4 @@
 .env
 formula_one_venv/
 __pycache__/
+migrations/
