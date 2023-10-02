@@ -2,7 +2,7 @@ from flask.views import MethodView
 from uuid import uuid4
 from flask_smorest import abort
 from sqlalchemy.exc import IntegrityError
-from flask_jwt_extended import get_jwt_identity, jwt_required
+# from flask_jwt_extended import get_jwt_identity, jwt_required
 
 from resources.drivers.DriverModel import DriverModel
 from .TeamModel import TeamModel
@@ -17,18 +17,18 @@ from . import bp
 class Teams(MethodView):
 
 #SHOW TEAMS
-    @jwt_required()
+    # @jwt_required()
     @bp.response(200, TeamSchema(many=True))    
     def get(self):
         return TeamModel.query.all()
 
 # # #EDIT TEAMS
-    @jwt_required()
+    # @jwt_required()
     @bp.arguments(TeamSchema)
     @bp.response(200, TeamSchema)
-    def post(self, team_data):
-        jwt = get_jwt_identity()
-        team_id = jwt['sub']
+    def post(self, team_data, team_id):
+        # jwt = get_jwt_identity()
+        # team_id = jwt['sub']
         team = TeamModel(**team_data, team_id = team_id)        
         try:        
             team.save()
@@ -45,7 +45,7 @@ class Teams(MethodView):
 class Team(MethodView):
 
 # # SHOW TEAM
-    @jwt_required()
+    # @jwt_required()
     @bp.response(200, TeamSchema)
     def get(self, team_id):
         team = TeamModel.query.get(team_id)
@@ -54,7 +54,7 @@ class Team(MethodView):
         abort(400, message="Invalid Team ID")
 
 # # #EDIT TEAM
-    @jwt_required()
+    # @jwt_required()
     @bp.arguments(TeamSchema)
     @bp.response(200, TeamSchema) 
     def put(self, team_data, team_id):
@@ -70,7 +70,7 @@ class Team(MethodView):
 
 # # #DELETE TEAM
     def delete(self, team_id):
-        team_id = get_jwt_identity()
+        # team_id = get_jwt_identity()
         team = TeamModel.query.get(team_id)
         if team:
             if team.team_id == team_id:

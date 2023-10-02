@@ -1,7 +1,7 @@
 from flask.views import MethodView
 from flask_smorest import abort
 from sqlalchemy.exc import IntegrityError
-from flask_jwt_extended import get_jwt_identity, jwt_required
+# from flask_jwt_extended import get_jwt_identity, jwt_required
 
 from .OwnerModel import OwnerModel
 from schemas import EditOwnerSchema, OwnerSchema
@@ -47,13 +47,13 @@ class Owner(MethodView):
         abort(404, message="Owner not found")
 
 #EDIT OWNER
-    @jwt_required()
+    # @jwt_required()
     @bp.arguments(EditOwnerSchema)
     @bp.response(200, OwnerSchema)
     def put(self, owner_data, owner_id):
-        current_owner_id = get_jwt_identity()
+        # current_owner_id = get_jwt_identity()
         owner = OwnerModel.query.get(owner_id)
-        if owner and owner.owner_id == current_owner_id:
+        if owner and owner.owner_id == owner_id:
             try:
                 owner.from_dict(owner_data)
                 owner.save()
@@ -63,9 +63,9 @@ class Owner(MethodView):
         abort(401, message="Unauthorized")
 
 #DELETE OWNER
-    @jwt_required()
+    # @jwt_required()
     def delete(self, owner_id):
-        owner_id = get_jwt_identity()
+        # owner_id = get_jwt_identity()
         owner = OwnerModel.query.get(owner_id)
         if owner and owner.owner_id == owner_id:
             owner.delete()

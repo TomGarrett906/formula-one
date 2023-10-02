@@ -3,13 +3,15 @@ from app import db
 
 class TeamModel(db.Model):
 
-    __tablename__ = "Teams"
+    __tablename__ = "teams"
     team_id = db.Column(db.Integer, primary_key=True)
     teamname = db.Column(db.String, nullable=False)
-    drivers = db.relationship("DriverModel", backref="drivers", lazy="dynamic", cascade="all, delete")
+    driver_id = db.Column(db.Integer, db.ForeignKey('drivers.driver_id'))
 
-    def __init__(self, teamname):
+
+    def __init__(self, teamname, driver_id):
         self.teamname = teamname
+        self.driver_id = driver_id 
 
     def __repr__(self):
         return f"<Team: {self.teamname}>"

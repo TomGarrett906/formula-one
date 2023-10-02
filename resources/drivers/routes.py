@@ -1,14 +1,11 @@
 from flask.views import MethodView
-from flask_jwt_extended import get_jwt_identity, jwt_required
-
+# from flask_jwt_extended import get_jwt_identity, jwt_required
 from flask_smorest import abort
 from sqlalchemy.exc import IntegrityError
 from schemas import DriverSchema, EditDriverSchema, TeamSchema, AuthDriverSchema
-
-
 from . import bp
 from .DriverModel import DriverModel
-
+from resources.teams.TeamModel import TeamModel  
 from db import drivers, teams
 
 
@@ -36,10 +33,10 @@ class Drivers(MethodView):
             abort(400, message="Username or Email already taken")
 
 #DELETE DRIVER
-    @jwt_required()
+    # @jwt_required()
     @bp.arguments(AuthDriverSchema)
-    def delete(self, driver_data):    
-        driver_id = get_jwt_identity()
+    def delete(self, driver_data, driver_id):    
+        # driver_id = get_jwt_identity()
         driver = DriverModel.query.get(driver_id)
  
         if driver and driver.username == driver_data['user_name'] and driver.check_password(driver_data['password']):
@@ -54,9 +51,7 @@ class Drivers(MethodView):
 
 @bp.route('/<driver_id>')
 class Driver(MethodView):
-
-#SHOW DRIVER
-    @bp.response(200, DriverSchema)      
+    @bp.response(200, DriverSchema)
     def get(self, driver_id):
         driver = None
         if driver_id.isdigit():
@@ -65,10 +60,10 @@ class Driver(MethodView):
             driver = DriverModel.query.filter_by(username=driver_id).first()
         if driver:
             return driver
-        abort(400, message='Please enter vaild username or id')
+        abort(400, message='Please enter valid username or id')
 
 #EDIT DRIVER
-    @jwt_required()
+    # @jwt_required()
     @bp.arguments(EditDriverSchema)
     @bp.response(202, EditDriverSchema)          
     def put(self,driver_data, driver_id):
@@ -90,12 +85,7 @@ class Driver(MethodView):
 @bp.get('/<driver_id>/team')
 @bp.response(200, TeamSchema(many=True)) 
 def get_drivers_team(driver_id):
-    print("driver_id:", driver_id,'\n')
-    print("drivers:", drivers,'\n')
-    print("teams:", teams,'\n')
-    
     if driver_id not in drivers:
         abort(404, message="Driver not found")
     drivers_team = [team for team in teams.values() if team['driver_id'] == driver_id]
     return drivers_team
-

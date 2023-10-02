@@ -4,7 +4,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 class DriverModel(db.Model):
 
-    __tablename__ = "Drivers"
+    __tablename__ = "drivers"
     driver_id = db.Column(db.Integer, primary_key=True)   
     username = db.Column(db.String, unique=True, nullable=False)
     email = db.Column(db.String, unique=True, nullable=False)
@@ -13,7 +13,7 @@ class DriverModel(db.Model):
     lastname = db.Column(db.String)
     teamname = db.Column(db.String)
     country = db.Column(db.String)
-    team_id = db.Column(db.Integer, db.ForeignKey('Teams.team_id'))
+    team_id = db.Column(db.Integer, db.ForeignKey('teams.team_id'))
 
     
 
